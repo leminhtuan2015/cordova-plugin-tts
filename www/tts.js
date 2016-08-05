@@ -26,3 +26,20 @@ exports.speak = function (text, onfulfilled, onrejected) {
             onrejected(reason);
         }, 'TTS', 'speak', [options]);
 };
+
+exports.download = function (language, success, fail) {
+    var options = {};
+
+    if (typeof language == 'string') {
+        options.language = language;
+    } else {
+        options = language;
+    }
+
+    cordova
+        .exec(function () {
+            success();
+        }, function (reason) {
+            fail(reason);
+        }, 'TTS', 'download', [options]);
+};

@@ -17,6 +17,9 @@ import android.speech.tts.UtteranceProgressListener;
 import java.util.HashMap;
 import java.util.Locale;
 
+import android.util.Log;
+import android.content.Intent;
+
 /*
     Cordova Text-to-Speech Plugin
     https://github.com/vilic/cordova-plugin-tts
@@ -33,6 +36,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
     public static final String ERR_NOT_INITIALIZED = "ERR_NOT_INITIALIZED";
     public static final String ERR_ERROR_INITIALIZING = "ERR_ERROR_INITIALIZING";
     public static final String ERR_UNKNOWN = "ERR_UNKNOWN";
+    public static final String LANGUAGE_NOT_SUPPORTED = "LANGUAGE_NOT_SUPPORTED";
 
     boolean ttsInitialized = false;
     TextToSpeech tts = null;
@@ -136,9 +140,24 @@ public class TTS extends CordovaPlugin implements OnInitListener {
         ttsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, callbackContext.getCallbackId());
 
         String[] localeArgs = locale.split("-");
-        tts.setLanguage(new Locale(localeArgs[0], localeArgs[1]));
+        int result = tts.setLanguage(new Locale(localeArgs[0], localeArgs[1]));
         tts.setSpeechRate((float) rate);
 
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
+        if(result == TextToSpeech.LANG_MISSING_DATA ||
+                result == TextToSpeech.LANG_NOT_SUPPORTED){
+            Log.e("error", "This Language is not supported");
+            callbackContext.error(LANGUAGE_NOT_SUPPORTED);
+            return;
+        } else {
+            Log.e("OKIE", "This Language is supported");
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, ttsParams);
+        }
+    }
+
+    private void download(JSONArray args, CallbackContext callbackContext)
+            throws JSONException, NullPointerException {
+        Intent installIntent = new Intent();
+        installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+        cordova.startActivityForResult(this, installIntent, 0);
     }
 }

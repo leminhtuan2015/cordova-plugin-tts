@@ -156,6 +156,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
 
     private void download(JSONArray args, CallbackContext callbackContext)
             throws JSONException, NullPointerException {
+        Log.e("OKIE", "This Language is download selecting");
         Intent installIntent = new Intent();
         installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
         cordova.startActivityForResult(this, installIntent, 0);

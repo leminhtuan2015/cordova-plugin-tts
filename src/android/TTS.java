@@ -73,6 +73,8 @@ public class TTS extends CordovaPlugin implements OnInitListener {
             throws JSONException {
         if (action.equals("speak")) {
             speak(args, callbackContext);
+        } else if(action.equals("download")){
+            download(args, callbackContext);
         } else {
             return false;
         }
